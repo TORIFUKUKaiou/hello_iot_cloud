@@ -11,8 +11,6 @@ defmodule HelloIotCloudWeb.ValueView do
   end
 
   def render("value.json", %{value: value}) do
-    %{id: value.id,
-      humidity: value.humidity,
-      temperature: value.temperature}
+    %{id: value.id, humidity: value.humidity, temperature: value.temperature}
   end
 end
