@@ -6,12 +6,12 @@ defmodule HelloIotCloud.MeasurementsTest do
   describe "values" do
     alias HelloIotCloud.Measurements.Value
 
-    @valid_attrs %{humidity: 120.5, temperature: 120.5}
-    @update_attrs %{humidity: 456.7, temperature: 456.7}
-    @invalid_attrs %{humidity: nil, temperature: nil}
+    @valid_attrs %{name: "awesome", humidity: 120.5, temperature: 120.5}
+    @invalid_attrs %{name: "awesome", humidity: nil, temperature: nil}
+    @invalid_attrs2 %{name: nil, humidity: nil, temperature: nil}
 
     def value_fixture(attrs \\ %{}) do
-      {:ok, value} =
+      {:ok, %{user: %HelloIotCloud.Accounts.User{}, value: %Value{} = value}} =
         attrs
         |> Enum.into(@valid_attrs)
         |> Measurements.create_value()
@@ -30,32 +30,19 @@ defmodule HelloIotCloud.MeasurementsTest do
     end
 
     test "create_value/1 with valid data creates a value" do
-      assert {:ok, %Value{} = value} = Measurements.create_value(@valid_attrs)
+      assert {:ok, %{user: %HelloIotCloud.Accounts.User{}, value: %Value{} = value}} =
+               Measurements.create_value(@valid_attrs)
+
       assert value.humidity == 120.5
       assert value.temperature == 120.5
     end
 
     test "create_value/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Measurements.create_value(@invalid_attrs)
+      assert {:error, :value, %Ecto.Changeset{}, %{}} = Measurements.create_value(@invalid_attrs)
     end
 
-    test "update_value/2 with valid data updates the value" do
-      value = value_fixture()
-      assert {:ok, %Value{} = value} = Measurements.update_value(value, @update_attrs)
-      assert value.humidity == 456.7
-      assert value.temperature == 456.7
-    end
-
-    test "update_value/2 with invalid data returns error changeset" do
-      value = value_fixture()
-      assert {:error, %Ecto.Changeset{}} = Measurements.update_value(value, @invalid_attrs)
-      assert value == Measurements.get_value!(value.id)
-    end
-
-    test "delete_value/1 deletes the value" do
-      value = value_fixture()
-      assert {:ok, %Value{}} = Measurements.delete_value(value)
-      assert_raise Ecto.NoResultsError, fn -> Measurements.get_value!(value.id) end
+    test "create_value/1 with invalid data returns error changeset 2" do
+      assert {:error, :user, %Ecto.Changeset{}, %{}} = Measurements.create_value(@invalid_attrs2)
     end
 
     test "change_value/1 returns a value changeset" do

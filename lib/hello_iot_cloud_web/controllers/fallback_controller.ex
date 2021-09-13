@@ -7,7 +7,14 @@ defmodule HelloIotCloudWeb.FallbackController do
   use HelloIotCloudWeb, :controller
 
   # This clause handles errors returned by Ecto's insert/update/delete.
-  def call(conn, {:error, %Ecto.Changeset{} = changeset}) do
+  def call(conn, {:error, :value, %Ecto.Changeset{} = changeset, %{}}) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> put_view(HelloIotCloudWeb.ChangesetView)
+    |> render("error.json", changeset: changeset)
+  end
+
+  def call(conn, {:error, :user, %Ecto.Changeset{} = changeset, %{}}) do
     conn
     |> put_status(:unprocessable_entity)
     |> put_view(HelloIotCloudWeb.ChangesetView)

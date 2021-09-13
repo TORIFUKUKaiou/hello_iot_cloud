@@ -5,7 +5,7 @@ defmodule HelloIotCloud.Measurements.Value do
   schema "values" do
     field :humidity, :float
     field :temperature, :float
-    field :user_id, :id
+    belongs_to :user, HelloIotCloud.Accounts.User
 
     timestamps()
   end
@@ -13,7 +13,7 @@ defmodule HelloIotCloud.Measurements.Value do
   @doc false
   def changeset(value, attrs) do
     value
-    |> cast(attrs, [:humidity, :temperature])
-    |> validate_required([:humidity, :temperature])
+    |> cast(attrs, [:humidity, :temperature, :user_id])
+    |> validate_required([:humidity, :temperature, :user_id])
   end
 end

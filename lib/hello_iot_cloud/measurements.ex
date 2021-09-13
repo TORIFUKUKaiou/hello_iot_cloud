@@ -18,7 +18,7 @@ defmodule HelloIotCloud.Measurements do
 
   """
   def list_values do
-    Repo.all(Value)
+    Repo.all(from v in Value, preload: [:user])
   end
 
   @doc """
@@ -35,7 +35,7 @@ defmodule HelloIotCloud.Measurements do
       ** (Ecto.NoResultsError)
 
   """
-  def get_value!(id), do: Repo.get!(Value, id)
+  def get_value!(id), do: Repo.get!(Value, id) |> Repo.preload([:user])
 
   @doc """
   Creates a value.
@@ -50,43 +50,23 @@ defmodule HelloIotCloud.Measurements do
 
   """
   def create_value(attrs \\ %{}) do
-    %Value{}
-    |> Value.changeset(attrs)
-    |> Repo.insert()
-  end
+    Ecto.Multi.new()
+    |> Ecto.Multi.run(:user, fn _repo, _changes ->
+      HelloIotCloud.Accounts.insert_and_get_user(attrs)
+    end)
+    |> Ecto.Multi.run(:value, fn _repo, %{user: user} ->
+      attrs =
+        if Map.keys(attrs) |> Enum.all?(&is_atom(&1)) do
+          Map.merge(attrs, %{user_id: user.id})
+        else
+          Map.merge(attrs, %{"user_id" => user.id})
+        end
 
-  @doc """
-  Updates a value.
-
-  ## Examples
-
-      iex> update_value(value, %{field: new_value})
-      {:ok, %Value{}}
-
-      iex> update_value(value, %{field: bad_value})
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def update_value(%Value{} = value, attrs) do
-    value
-    |> Value.changeset(attrs)
-    |> Repo.update()
-  end
-
-  @doc """
-  Deletes a value.
-
-  ## Examples
-
-      iex> delete_value(value)
-      {:ok, %Value{}}
-
-      iex> delete_value(value)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_value(%Value{} = value) do
-    Repo.delete(value)
+      %Value{user: user}
+      |> Value.changeset(attrs)
+      |> Repo.insert()
+    end)
+    |> Repo.transaction()
   end
 
   @doc """

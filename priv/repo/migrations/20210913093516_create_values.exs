@@ -3,9 +3,9 @@ defmodule HelloIotCloud.Repo.Migrations.CreateValues do
 
   def change do
     create table(:values) do
-      add :humidity, :float
-      add :temperature, :float
-      add :user_id, references(:users, on_delete: :nothing)
+      add :humidity, :float, null: false
+      add :temperature, :float, null: false
+      add :user_id, references(:users, on_delete: :nothing), null: false
 
       timestamps()
     end
