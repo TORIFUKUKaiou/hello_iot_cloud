@@ -12,6 +12,8 @@ defmodule HelloIotCloudWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+
+    resources "/values", HelloIotCloudWeb.ValueController, except: [:new, :edit]
   end
 
   scope "/", HelloIotCloudWeb do
