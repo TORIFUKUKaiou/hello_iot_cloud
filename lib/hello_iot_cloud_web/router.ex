@@ -21,6 +21,7 @@ defmodule HelloIotCloudWeb.Router do
 
     live "/", PageLive, :index
     live "/chart", ChartLive
+    live "/temperature-chart", TemperatureChartLive
   end
 
   # Other scopes may use custom stacks.

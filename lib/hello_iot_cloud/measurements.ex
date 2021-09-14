@@ -7,6 +7,11 @@ defmodule HelloIotCloud.Measurements do
   alias HelloIotCloud.Repo
 
   alias HelloIotCloud.Measurements.Value
+  alias HelloIotCloud.Accounts.User
+
+  def subscribe do
+    Phoenix.PubSub.subscribe(HelloIotCloud.PubSub, "values")
+  end
 
   @doc """
   Returns the list of values.
@@ -67,7 +72,20 @@ defmodule HelloIotCloud.Measurements do
       |> Repo.insert()
     end)
     |> Repo.transaction()
+    |> broadcast(:value_created)
   end
+
+  def broadcast({:ok, %{value: %Value{} = value, user: %User{} = user}}, event) do
+    Phoenix.PubSub.broadcast(
+      HelloIotCloud.PubSub,
+      "values",
+      {event, value}
+    )
+
+    {:ok, %{value: value, user: user}}
+  end
+
+  def broadcast({:error, _, _, _} = error, _event), do: error
 
   @doc """
   Returns an `%Ecto.Changeset{}` for tracking value changes.
