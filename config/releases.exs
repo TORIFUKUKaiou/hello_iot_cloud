@@ -39,3 +39,4 @@ config :hello_iot_cloud, HelloIotCloudWeb.Endpoint,
 #
 # Then you can assemble a release by calling `mix release`.
 # See `mix help release` for more information.
+config :hello_iot_cloud, HelloIotCloudWeb.Endpoint, server: true
