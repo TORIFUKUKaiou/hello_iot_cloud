@@ -6,14 +6,18 @@ defmodule HelloIotCloudWeb.ChartLive do
       :timer.send_interval(1000, self(), :update)
     end
 
-    {:ok,
-     assign(socket,
-       chart_data: %{
-         suggestedmin: 50,
-         suggestedmax: 200
-       },
-       current_reading: 12
-     )}
+    socket =
+      socket
+      |> assign(
+        chart_data: %{
+          suggestedmin: 50,
+          suggestedmax: 200
+        }
+      )
+      |> assign(current_reading: 12)
+      |> assign(time: format_time(Timex.now()))
+
+    {:ok, socket}
   end
 
   def render(assigns) do
@@ -29,6 +33,9 @@ defmodule HelloIotCloudWeb.ChartLive do
       <div>
         Total readings: <%= @current_reading %>
       </div>
+      <div>
+        <%= @time %>
+      </div>
     </div>
     """
   end
@@ -39,6 +46,7 @@ defmodule HelloIotCloudWeb.ChartLive do
 
   defp add_point(socket) do
     socket = update(socket, :current_reading, &(&1 + 1))
+    socket = assign(socket, time: format_time(Timex.now()))
 
     point = %{
       label: socket.assigns.current_reading,
@@ -51,5 +59,9 @@ defmodule HelloIotCloudWeb.ChartLive do
 
   defp get_reading do
     Enum.random(70..180)
+  end
+
+  defp format_time(time) do
+    HelloIotCloud.Cldr.format_time(time, locale: "ja-JP", timezone: "Asia/Tokyo")
   end
 end
