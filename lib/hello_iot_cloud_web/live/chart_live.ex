@@ -9,8 +9,8 @@ defmodule HelloIotCloudWeb.ChartLive do
     {:ok,
      assign(socket,
        chart_data: %{
-        suggestedmin: 50,
-        suggestedmax: 200
+         suggestedmin: 50,
+         suggestedmax: 200
        },
        current_reading: 12
      )}
