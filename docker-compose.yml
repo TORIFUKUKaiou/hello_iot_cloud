@@ -1,0 +1,61 @@
+version: "3"
+
+services:
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy
+    container_name: nginx-proxy
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - certs:/etc/nginx/certs
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+
+  nginx-proxy-acme:
+    image: nginxproxy/acme-companion
+    container_name: nginx-proxy-acme
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - acme:/etc/acme.sh
+      - certs:/etc/nginx/certs
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+    environment:
+      - DEFAULT_EMAIL=${EMAIL}
+      - NGINX_PROXY_CONTAINER=nginx-proxy
+    depends_on:
+      - nginx-proxy
+
+  app:
+    image: hello_iot_cloud:latest
+    build:
+      context: .
+    environment:
+      - SECRET_KEY_BASE=3IuAYS8yod5/tRAy+GmmAU+blS39HzgNpDbe+s685WWcCFKGDfD72W7bwpZAn31B
+      - DATABASE_URL=ecto://postgres:postgres@db/hello_iot_cloud
+      - VIRTUAL_HOST=${VIRTUAL_HOST}
+      - VIRTUAL_PORT=4000
+      - LETSENCRYPT_HOST=${VIRTUAL_HOST}
+      - LETSENCRYPT_EMAIL=${EMAIL}
+    ports:
+      - 4000:4000
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    volumes:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=hello_iot_cloud
+    depends_on:
+      - nginx-proxy-acme
+
+volumes:
+  certs:
+  vhost:
+  html:
+  acme:
