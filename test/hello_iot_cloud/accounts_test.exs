@@ -12,7 +12,7 @@ defmodule HelloIotCloud.AccountsTest do
     test "list_with_last_value" do
       Measurements.create_value(%{name: "awesome", humidity: 1.0, temperature: 2.0})
       Measurements.create_value(%{name: "awesome2", humidity: 3.0, temperature: 4.0})
-      Process.sleep(1000)
+      Repo.update_all("values", set: [inserted_at: DateTime.utc_now() |> DateTime.add(-60)])
       Measurements.create_value(%{name: "awesome", humidity: 5.0, temperature: 6.0})
       Measurements.create_value(%{name: "awesome2", humidity: 7.0, temperature: 8.0})
 
