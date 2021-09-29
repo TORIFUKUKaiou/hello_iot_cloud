@@ -80,6 +80,57 @@ class LineChart {
 
     this.chart.update();
   }
+
+  addPoints(label, arg_values, arg_names) {
+    const colors = [
+      'rgb(128, 128, 0)',
+      'rgb(255, 255, 0)',
+      'rgb(255, 0, 255)',
+      'rgb(192, 192, 192)',
+      'rgb(0, 255, 255)',
+      'rgb(0, 255, 0)',
+      'rgb(255, 0, 0)',
+      'rgb(128, 128, 128)',
+      'rgb(0, 0, 255)',
+      'rgb(0, 128, 0)',
+      'rgb(128, 0, 128)',
+      'rgb(0, 0, 0)',
+      'rgb(0, 0, 128)',
+      'rgb(0, 128, 128)',
+      'rgb(128, 0, 0)',
+    ]
+
+    const labels = this.chart.data.labels;
+    const datasets = this.chart.data.datasets;
+
+    for (let i = 0; i < arg_names.length; i++) {
+      const name = arg_names[i]
+      const value = arg_values[i]
+
+      const names = datasets.map(function({label}) {
+        return label;
+      });
+      const exists = names.some(function(n) {
+        return n === name;
+      });
+
+      if (!exists) {
+        datasets.push({label: name, data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], borderColor: colors[Math.floor(Math.random() * colors.length)]})
+      }
+
+      const {data} = datasets.find(function({label}) {
+        return label === name;
+      });
+
+      data.push(value);
+      data.shift();
+    }
+
+    labels.push(label);
+    labels.shift();
+
+    this.chart.update();
+  }
 }
 
 export default LineChart;
