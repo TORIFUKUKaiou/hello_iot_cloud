@@ -3,7 +3,7 @@ defmodule HelloIotCloudWeb.HumidityChartLive do
 
   def mount(_params, _session, socket) do
     if connected?(socket) do
-      HelloIotCloud.Measurements.subscribe()
+      :timer.send_interval(1000, self(), :tick)
     end
 
     socket =
@@ -40,21 +40,26 @@ defmodule HelloIotCloudWeb.HumidityChartLive do
     """
   end
 
-  def handle_info({:value_created, value}, socket) do
-    {:noreply, add_point(socket, value)}
-  end
-
-  defp add_point(socket, value) do
+  def handle_info(:tick, socket) do
     socket = update(socket, :current_reading, &(&1 + 1))
     socket = assign(socket, time: format_time(Timex.now()))
 
-    point = %{
-      label: socket.assigns.current_reading,
-      value: value.humidity,
-      name: value.user.name
+    {:noreply, add_points(socket)}
+  end
+
+  defp add_points(socket) do
+    users_with_last_value = HelloIotCloud.Accounts.list_with_last_value()
+
+    points = %{
+      label: socket.assigns.time |> String.split(" ") |> Enum.at(1),
+      values:
+        Enum.map(users_with_last_value, & &1.values)
+        |> Enum.map(&Enum.at(&1, 0))
+        |> Enum.map(& &1.humidity),
+      names: Enum.map(users_with_last_value, & &1.name)
     }
 
-    push_event(socket, "new-point", point)
+    push_event(socket, "new-points", points)
   end
 
   defp format_time(time) do
