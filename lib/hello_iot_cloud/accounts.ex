@@ -16,11 +16,13 @@ defmodule HelloIotCloud.Accounts do
   end
 
   def list_with_last_value do
-    Repo.all(User)
+    list_users()
     |> Repo.preload(
       values: from(v in Value, distinct: v.user_id, order_by: [desc: v.inserted_at])
     )
   end
+
+  def list_users, do: Repo.all(User)
 
   defp create_user(attrs) do
     %User{}

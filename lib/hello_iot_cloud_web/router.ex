@@ -23,6 +23,7 @@ defmodule HelloIotCloudWeb.Router do
     live "/chart", ChartLive
     live "/temperature-chart", TemperatureChartLive
     live "/humidity-chart", HumidityChartLive
+    live "/aht20-dashboard", Aht20DashboardLive
   end
 
   # Other scopes may use custom stacks.
