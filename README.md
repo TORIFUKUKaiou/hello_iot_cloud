@@ -66,6 +66,9 @@ https://nervesjp-dsf2021.japaneast.cloudapp.azure.com/
     $ sudo swapon --show
     NAME      TYPE  SIZE USED PRIO
     /swapfile file 1024M   0B   -2
+
+    $ sudo cp /etc/fstab /etc/fstab.bak
+    $ echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
     ```
     - [Docker Engine on Ubuntuをインストール](https://docs.docker.com/engine/install/ubuntu/)する(ry
     - `docker-compose`をインストールする
