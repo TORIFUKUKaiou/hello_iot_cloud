@@ -115,7 +115,8 @@ class LineChart {
       });
 
       if (!exists) {
-        datasets.push({label: name, data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], borderColor: colors[Math.floor(Math.random() * colors.length)]})
+        const rem = i % colors.length
+        datasets.push({label: name, data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], borderColor: colors[rem]})
       }
 
       const {data} = datasets.find(function({label}) {
