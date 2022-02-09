@@ -20,7 +20,7 @@ defmodule HelloIotCloud.MixProject do
   def application do
     [
       mod: {HelloIotCloud.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :ex_rated]
     ]
   end
 
@@ -48,7 +48,8 @@ defmodule HelloIotCloud.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:ex_cldr_dates_times, "~> 2.9"},
-      {:timex, "~> 3.7"}
+      {:timex, "~> 3.7"},
+      {:ex_rated, "~> 2.0"}
     ]
   end
 

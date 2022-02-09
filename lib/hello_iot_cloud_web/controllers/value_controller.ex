@@ -1,10 +1,14 @@
 defmodule HelloIotCloudWeb.ValueController do
+  import HelloIotCloudWeb.API.RateLimitPlug, only: [rate_limit: 2]
+
   use HelloIotCloudWeb, :controller
 
   alias HelloIotCloud.Measurements
   alias HelloIotCloud.Measurements.Value
 
   action_fallback HelloIotCloudWeb.FallbackController
+
+  plug :rate_limit, max_requests: 10, interval_seconds: 10
 
   def index(conn, _params) do
     values = Measurements.list_values()
